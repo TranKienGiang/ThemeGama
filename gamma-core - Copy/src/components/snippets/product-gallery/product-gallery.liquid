@@ -14,7 +14,9 @@
     {%- capture carousel_contents -%}
       {%- for media in product.media -%}
         {%- assign mod_media_item_class = 'w-full lg:w-1/2 flex-shrink-0' -%}
-        {%- assign mod_media_image_class = 'aspect-[1/1] w-full' -%}
+        {%- assign mod_ custom_media_item_class = 'w-full flex-shrink-0' -%}
+        {%- assign mod_media_image_class = 'aspect-[1/1] 2xl:relative 2xl:top-[170px] 2xl:left-1/2 2xl:-translate-x-1/2 md-max:w-full 2xl:w-[60%]' -%}
+        {%- assign mod_custom_media_image_class = 'aspect-[1/1] w-1/2'%}
         {%- if media_size_modulo != 0 -%}
           {%- if forloop.first -%}
             {%- assign mod_media_item_class = 'w-full lg:px-[94.5px] flex-shrink-0' -%}
@@ -39,8 +41,7 @@
             assign product_image_wrapper = 'relative block aspect-[1/1] max-w-[820px] mx-auto w-full'
           endif
         -%}
-
-        <div class="product-gallery-item cursor-zoom-in select-none flex justify-center items-center px-4 pt-[30px] md:p-4 lg:p-8 {{ mod_media_item_class }} snap-start js-gallery-item" data-media-type="{{ media.media_type }}" data-media-id="{{ media.id }}">
+        <div class="product-gallery-item select-none flex justify-center items-center px-4 pt-[30px] md:p-4 lg:p-8 {{ custom_media_item_class }} snap-start js-gallery-item" data-media-type="{{ media.media_type }}" data-index="{{ forloop.index0 }}" data-media-id="{{ media.id }}">
           {% case media.media_type %}
             {% when 'image' %}
               <div class="{{ product_image_wrapper }}">
@@ -76,15 +77,33 @@
     {%- endif -%}
     {%- render 'carousel',
       class_wrap: class_carousel_wrap,
-      class: 'md:flex-wrap carousel-mobile',
+      class: 'carousel-enable',
       content: carousel_contents,
-      class_custom_button: class_buttons,
+      class_custom_button-r: 'relative bottom-80 left-56',
+      class_custom_button-l: 'relative bottom-80 right-56',
       class_main: 'pt-0',
+      class_no_zooom: '2xl:max-h-[520px]'
       class_icon: 'w-4 h-4 text-black',
       custom_dots: true,
-      class_custom_dots: 'md:hidden mt-4',
+      class_custom_dots: '2xl:absolute 2xl:top-1/2 2xl:left-1/2 mt-4',
       class_carousel: class_carousel
     -%}
+    {%- if mod_media.size > 1 -%}
+    <div class="flex-row hidden pr-12 mt-3 mr-6 lg:flex-justify-center">
+      {%- assign media_index = 0 -%}
+      {%- for media in product.media -%}
+        {%- if media.media_type == 'image' -%}
+          <div class="w-24 mb-6 last:mb-0 cursor-pointer border-[3px] border-transparent [&.is-active]:border-secondary js-zoom-thumb-item" data-media-type="{{ media.media_type }}" data-media-id="{{ media.id }}" data-index="{{ media_index }}">
+            {%- render 'image',
+              image: media,
+              class: 'aspect-[1/1]'
+            -%}
+          </div>
+          {%- assign media_index = media_index | plus: 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
     <div class="product-gallery-zoom">
       <modal-dialog>
         <button type="button" class="absolute z-10 top-6 right-6 js-close-modal" aria-label="close modal">
@@ -92,20 +111,6 @@
         </button>
         <div class="w-full h-full modal-dialog-content js-content-modal-dialog">
           <div class="h-full flex-center lg:px-10">
-            <div class="flex-col hidden pr-12 mr-6 product-gallery-zoom-thumb lg:flex-justify-center">
-              {%- assign media_index = 0 -%}
-              {%- for media in product.media -%}
-                {%- if media.media_type == 'image' -%}
-                  <div class="w-24 mb-6 last:mb-0 cursor-pointer border-[3px] border-transparent [&.is-active]:border-secondary js-zoom-thumb-item" data-media-type="{{ media.media_type }}" data-media-id="{{ media.id }}" data-index="{{ media_index }}">
-                    {%- render 'image',
-                      image: media,
-                      class: 'aspect-[1/1]'
-                    -%}
-                  </div>
-                  {%- assign media_index = media_index | plus: 1 -%}
-                {%- endif -%}
-              {%- endfor -%}
-            </div>
             <div class="h-full product-gallery-zoom-main js-gallery-zoom-main flex-center">
               {%- assign slide_counter = 0 -%}
               {%- capture carousel_gallery_zoom -%}
@@ -113,7 +118,7 @@
                   {%- if media.media_type == 'image' -%}
                     {%- assign slide_counter = slide_counter | plus: 1 -%}
                     <div class="h-full w-full aspect-[1/1] flex-shrink-0 snap-start flex-center overflow-hidden" data-index="{{ forloop.index0 }}" data-media-type="{{ media.media_type }}" data-media-id="{{ media.id }}">
-                      {{ media | image_url: width: 2040 | image_tag: is: 'image-zoom', data-zoom-on-double-click: 'true', data-zoom-on-pinch: true, data-zoom-on-wheel: true }}
+                      {{ media | image_url: width: 550 | image_tag: is: 'image-zoom' }}
                     </div>
                   {%- endif -%}
                 {%- endfor -%}
@@ -132,6 +137,20 @@
                 custom_dots: true,
                 class_custom_dots: 'mt-auto lg:hidden mb-4'
               -%}
+            </div>
+            <div class="flex-col hidden pr-12 mr-6 product-gallery-zoom-thumb lg:flex-justify-center">
+              {%- assign media_index = 0 -%}
+              {%- for media in product.media -%}
+                {%- if media.media_type == 'image' -%}
+                  <div class="w-24 mb-6 last:mb-0 cursor-pointer border-[3px] border-transparent [&.is-active]:border-secondary js-zoom-thumb-item" data-media-type="{{ media.media_type }}" data-media-id="{{ media.id }}" data-index="{{ media_index }}">
+                    {%- render 'image',
+                      image: media,
+                      class: 'aspect-[1/1]'
+                    -%}
+                  </div>
+                  {%- assign media_index = media_index | plus: 1 -%}
+                {%- endif -%}
+              {%- endfor -%}
             </div>
           </div>
         </div>
