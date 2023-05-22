@@ -1,0 +1,43 @@
+{{- 'section-detail-product.css' | asset_url | stylesheet_tag -}}
+{%- capture src_url -%}
+  {{- 'section-detail-product.js' | asset_url -}}
+{%- endcapture -%}
+{%- render 'atom_script', src: src_url, priority: 'normal', type: 'defer' -%}
+
+<section>
+  <div style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff" class="swiper mySwiper2">
+    <div class="swiper-wrapper" id="image-detail"></div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+  </div>
+  <div thumbsSlider="" class="swiper mySwiper">
+    <div class="swiper-wrapper" id="image-detail1"></div>
+  </div>
+</section>
+{% schema %}
+  {
+    "name": "Featured Details",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Featured collection"
+      }, {
+        "id": "collection",
+        "type": "collection",
+        "label": "Collection"
+      }, {
+        "id": "item-in-row",
+        "type": "number",
+        "label": "Item in row"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Featured Details",
+        "category": "Collection"
+      }
+    ]
+  }
+{% endschema %}
